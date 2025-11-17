@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/firebase.ts";
 import toast from "react-hot-toast";
-import { Navigate } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 export default function SignUp() {
   const [email, setEmail] = useState("");

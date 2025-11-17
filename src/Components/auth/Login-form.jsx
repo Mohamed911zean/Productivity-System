@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../../lib/firebase.ts";
 import toast from "react-hot-toast";
-import { useNavigate } from "react-router-dom"; // لو هتعمل redirect بعد الدخول
+import { useNavigate, Link } from "react-router-dom";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -55,6 +55,17 @@ export default function Login() {
         >
           {loading ? "Logging in..." : "Login"}
         </button>
+
+        {/* Link to SignUp */}
+        <p className="text-center mt-4 text-gray-400 text-sm">
+          Don't have an account?{" "}
+          <Link
+            to="/signup"
+            className="text-yellow-500 hover:text-yellow-400 font-semibold"
+          >
+            Sign Up
+          </Link>
+        </p>
       </div>
     </div>
   );
