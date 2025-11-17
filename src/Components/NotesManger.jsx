@@ -9,7 +9,7 @@ import {
   ChevronLeft,
   FolderOpen,
 } from "lucide-react";
-import { useTodoStore } from "./NotestMangerStore";
+import { useTodoStore } from "../stores/NotestMangerStore";
 
 // Toast Component
 const Toast = ({ message, type, onClose }) => {
