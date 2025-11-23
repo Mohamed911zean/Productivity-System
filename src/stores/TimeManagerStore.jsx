@@ -4,11 +4,9 @@ import { persist } from "zustand/middleware";
 export const useTimeManagerStore = create(
   persist(
     (set, get) => ({
-
       ////////////////////////
       ////// TIMERS STORE ////
       ////////////////////////
-
       timers: [],
 
       addTimer: (timer) =>
@@ -19,6 +17,7 @@ export const useTimeManagerStore = create(
               id: Date.now(),
               isRunning: false,
               remaining: timer.duration || 0, // بالثواني
+              duration: timer.duration || 0,
               ...timer,
             },
           ],
@@ -26,8 +25,8 @@ export const useTimeManagerStore = create(
 
       updateTimer: (id, newData) =>
         set((state) => ({
-          timers: state.timers.map((timer) =>
-            timer.id === id ? { ...timer, ...newData } : timer
+          timers: state.timers.map((t) =>
+            t.id === id ? { ...t, ...newData } : t
           ),
         })),
 
@@ -36,7 +35,6 @@ export const useTimeManagerStore = create(
           timers: state.timers.filter((t) => t.id !== id),
         })),
 
-      // ⭐ تشغيل/إيقاف المؤقت
       toggleTimer: (id) =>
         set((state) => ({
           timers: state.timers.map((t) =>
@@ -44,7 +42,6 @@ export const useTimeManagerStore = create(
           ),
         })),
 
-      // ⭐ إعادة ضبط المؤقت
       resetTimer: (id) =>
         set((state) => ({
           timers: state.timers.map((t) =>
@@ -52,14 +49,39 @@ export const useTimeManagerStore = create(
           ),
         })),
 
-      clearAllTimers: () => set({ timers: [] }),
+      tickTimers: () => {
+        set((state) => ({
+          timers: state.timers.map((t) => {
+            if (t.isRunning && t.remaining > 0) {
+              return { ...t, remaining: t.remaining - 1 };
+            }
+            return t;
+          }),
+        }));
+      },
 
+      ////////////////////////
+      ////// STOPWATCH ///////
+      ////////////////////////
+      stopwatchTime: 0,
+      isStopwatchRunning: false,
 
+      startStopStopwatch: () =>
+        set((state) => ({ isStopwatchRunning: !state.isStopwatchRunning })),
+
+      resetStopwatch: () =>
+        set({ stopwatchTime: 0, isStopwatchRunning: false }),
+
+      tickStopwatch: () =>
+        set((state) => ({
+          stopwatchTime: state.isStopwatchRunning
+            ? state.stopwatchTime + 1
+            : state.stopwatchTime,
+        })),
 
       ////////////////////////
       ////// ALARMS STORE ////
       ////////////////////////
-
       alarms: [],
 
       addAlarm: (alarm) =>
@@ -69,16 +91,10 @@ export const useTimeManagerStore = create(
             {
               id: Date.now(),
               enabled: true,
+              lastTriggered: null,
               ...alarm,
             },
           ],
-        })),
-
-      updateAlarm: (id, newData) =>
-        set((state) => ({
-          alarms: state.alarms.map((a) =>
-            a.id === id ? { ...a, ...newData } : a
-          ),
         })),
 
       removeAlarm: (id) =>
@@ -86,21 +102,31 @@ export const useTimeManagerStore = create(
           alarms: state.alarms.filter((a) => a.id !== id),
         })),
 
-      clearAllAlarms: () => set({ alarms: [] }),
-
       checkAlarms: () => {
         const now = new Date();
         const h = now.getHours();
         const m = now.getMinutes();
 
-        const { alarms } = get();
+        const triggered = [];
 
-        return alarms.filter((a) => a.enabled && a.hour === h && a.minute === m);
+        set((state) => ({
+          alarms: state.alarms.map((a) => {
+            if (
+              a.enabled &&
+              a.hour === h &&
+              a.minute === m &&
+              a.lastTriggered !== `${h}:${m}`
+            ) {
+              triggered.push(a);
+              return { ...a, lastTriggered: `${h}:${m}` };
+            }
+            return a;
+          }),
+        }));
+
+        return triggered;
       },
-      
-
     }),
-
     {
       name: "time-manager-storage",
     }
