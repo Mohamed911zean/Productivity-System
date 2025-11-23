@@ -329,7 +329,7 @@ export default function NotesManger() {
             )}
 
             {/* Bottom Navigation */}
-            <div className="bg-black border-t border-zinc-800 px-6 py-3 flex items-center justify-around">
+            <div className="bg-black border-t border-zinc-800 px-6 py-3 flex items-center justify-around mb-9">
               <button
                 onClick={() => setActiveTab("notes")}
                 className="flex flex-col items-center gap-1"

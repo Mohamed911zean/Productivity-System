@@ -172,6 +172,8 @@ export default function ClockView() {
     return `${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}.${String(centiseconds).padStart(2, '0')}`;
   };
 
+
+  
   const handleStartTimer = () => {
     playClick();
     const totalSeconds = (timerHours * 3600) + (timerMinutes * 60) + timerSeconds;

@@ -88,7 +88,6 @@ export const useTimeManagerStore = create(
 
       clearAllAlarms: () => set({ alarms: [] }),
 
-      // ⭐ تشيك لو المنبه وصل لوقته — هيفيد في التابات والجلسة والموقع
       checkAlarms: () => {
         const now = new Date();
         const h = now.getHours();
@@ -98,6 +97,7 @@ export const useTimeManagerStore = create(
 
         return alarms.filter((a) => a.enabled && a.hour === h && a.minute === m);
       },
+      
 
     }),
 
