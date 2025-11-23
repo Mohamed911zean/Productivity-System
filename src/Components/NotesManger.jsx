@@ -11,6 +11,11 @@ import {
 } from "lucide-react";
 import { useTodoStore } from "../stores/NotestMangerStore";
 import ClockView from "./TimeManager"
+import { auth } from "../lib/firebase.ts";
+import { signOut } from "firebase/auth";
+import Cookies from "js-cookie";
+import { LogOut } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 // Toast Component
 const Toast = ({ message, type, onClose }) => {
@@ -32,6 +37,8 @@ const Toast = ({ message, type, onClose }) => {
     </div>
   );
 };
+
+
 
 // Format Date Function
 const formatDate = (timestamp) => {
@@ -60,6 +67,18 @@ export default function NotesManger() {
 
   const showToast = (message, type) => {
     setToast({ message, type });
+  };
+
+  const navigate = useNavigate(); // جوه الكومبوننت
+
+  const handleLogout = async () => {
+    try {
+      await signOut(auth);      // تسجيل الخروج من Firebase
+      Cookies.remove("auth");   // حذف الكوكي
+      navigate("/login");       // إعادة التوجيه للصفحة
+    } catch (error) {
+      console.error("Logout error:", error);
+    }
   };
 
   const filteredNotes = notes
@@ -149,15 +168,16 @@ export default function NotesManger() {
                 <div className="flex items-center justify-between px-4 pt-4 pb-3">
                   <h1 className="text-3xl font-bold">Clock</h1>
                   <div className="flex gap-4">
-                    <button className="p-2">
-                      <FolderOpen size={24} className="text-white" />
-                    </button>
-                    <button className="p-2">
-                      <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-                        <div className="w-3 h-3 bg-white rounded-full"></div>
-                      </div>
-                    </button>
-                  </div>
+
+
+  {/* زر تسجيل الخروج */}
+  <button
+    onClick={handleLogout}
+    className="px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-red-700 transition text-sm"
+  >
+    <LogOut />
+  </button>
+</div>
                 </div>
                 <div className="flex-1 flex flex-col overflow-hidden">
                   <ClockView />
@@ -166,20 +186,19 @@ export default function NotesManger() {
             ) : (
               <>
                 {/* Header with icons */}
-                <div className="flex items-center justify-between px-4 pt-4 pb-3">
-                  <h1 className="text-3xl font-bold">
-                    {activeTab === "notes" ? "Notes" : "Tasks"}
-                  </h1>
-                  <div className="flex gap-4">
-                    <button className="p-2">
-                      <FolderOpen size={24} className="text-white" />
-                    </button>
-                    <button className="p-2">
-                      <div className="w-6 h-6 border-2 border-white rounded-full flex items-center justify-center">
-                        <div className="w-3 h-3 bg-white rounded-full"></div>
-                      </div>
-                    </button>
-                  </div>
+                <div className="flex items-center justify-end px-4 pt-4 pb-3">
+                 <div className="flex gap-4">
+
+
+  {/* زر تسجيل الخروج */}
+  <button
+    onClick={handleLogout}
+    className="px-3 py-2 bg-yellow-500 text-white rounded-xl hover:bg-red-700 transition text-sm"
+  >
+    <LogOut />
+  </button>
+</div>
+
                 </div>
 
                 {/* Search */}

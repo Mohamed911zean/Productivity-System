@@ -4,6 +4,7 @@ import SignUp from './Components/auth/Signup-form.jsx';
 import NotesApp from './Components/NotesManger.jsx'
 import Login from './Components/auth/Login-form.jsx'
 import TimeManager from "./Components/TimeManager.jsx";
+
 const App = () => {
   return (
    <>
