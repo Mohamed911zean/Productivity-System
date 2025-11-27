@@ -186,7 +186,12 @@ export default function NotesManger() {
             ) : (
               <>
                 {/* Header with icons */}
-                <div className="flex items-center justify-end px-4 pt-4 pb-3">
+                <div className="flex items-center justify-between px-4 pt-4 pb-3">
+                  {activeTab === "notes" ? (
+                    <h1 className="text-3xl font-bold flex items-center gap-2">Notes</h1>
+                  ) : (
+                    <h1 className="text-3xl font-bold flex items-center gap-2"> Tasks</h1>
+                  )}
                  <div className="flex gap-4">
 
 
