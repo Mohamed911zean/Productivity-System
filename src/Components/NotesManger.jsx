@@ -452,7 +452,7 @@ export default function NotesManger() {
             )}
 
             {/* Bottom Navigation - No blur */}
-            <div className="glass border-t border-zinc-800/50 px-6 py-4 flex items-center justify-around fixed bottom-0 w-full md:static">
+            <div className="glass border-t border-zinc-800/50 px-6 py-4  flex items-center justify-around fixed bottom-0 w-full md:static">
               <button
                 onClick={() => setActiveTab("notes")}
                 className="flex flex-col items-center gap-1.5 cursor-pointer group"
@@ -620,7 +620,7 @@ export default function NotesManger() {
                 </div>
 
                 {/* Content */}
-                <div className="flex-1 overflow-y-auto">
+                <div className="flex-1 overflow-y-auto ">
                   <div className="max-w-3xl mx-auto p-8">
                     {editingId ? (
                       <textarea

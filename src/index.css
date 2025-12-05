@@ -24,6 +24,16 @@
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
+}
+
+body {
+  height: 100%;
+  margin: 0;
+}
+
+#root {
+  height: 100%;
 }
 
 /* Custom Scrollbar - iOS Style */
@@ -155,13 +165,9 @@ html {
   background: linear-gradient(145deg, #1f1f22, #18181b);
   border-radius: 20px;
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.4);
-  transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+  cursor: pointer;
 }
 
-.premium-card:hover {
-  transform: translateY(-4px);
-  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
-}
 
 /* Button Styles */
 .btn-premium {

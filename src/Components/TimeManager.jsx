@@ -3,7 +3,7 @@ import { Globe, Bell, Timer, Plus, Trash2, Clock, X } from "lucide-react";
 import { useTimeManagerStore } from "../stores/TimeManagerStore";
 import toast, { Toaster } from "react-hot-toast";
 import { motion, AnimatePresence } from "framer-motion";
-
+import { useAnalyticsStore } from "../stores/AnaliticsStore";
 // Simple sound hook
 const useSoundEffect = (url) => {
   const audio = new Audio(url);
@@ -43,7 +43,9 @@ export default function ClockView() {
   const playTimerEnd = useSoundEffect(SOUNDS.timerEnd);
   const playSuccess = useSoundEffect(SOUNDS.success);
 
-  // Store
+const startSession = useAnalyticsStore(state => state.startSession);
+const endSession = useAnalyticsStore(state => state.endSession);
+
   const {
     timers,
     tickTimers,
@@ -93,16 +95,20 @@ export default function ClockView() {
     return () => cancelAnimationFrame(animationFrame);
   }, [stopwatchRunning, stopwatchStartTime]);
 
-  // Check for completed timers
-  useEffect(() => {
-    timers.forEach((t) => {
-      if (t.remaining === 0 && t.isRunning) {
-        playTimerEnd();
-        toast.success("⏰ Timer completed!");
-        setTimeout(() => removeTimer(t.id), 100);
-      }
-    });
-  }, [timers, playTimerEnd, removeTimer]);
+ // Check for completed timers and save to analytics
+useEffect(() => {
+  timers.forEach((t) => {
+    if (t.remaining === 0 && t.isRunning) {
+      playTimerEnd();
+      toast.success("⏰ Timer completed!");
+      
+      // Save session to analytics ← هنا الإضافة
+      startSession();
+      endSession();      
+      setTimeout(() => removeTimer(t.id), 100);
+    }
+  });
+}, [timers, playTimerEnd, removeTimer, startSession, endSession]);
 
   // Timer control
   const handleQuickTimer = (minutes) => {
@@ -548,7 +554,6 @@ export default function ClockView() {
                           duration: 0.3,
                           ease: [0.16, 1, 0.3, 1]
                         }}
-                        whileHover={{ scale: 1.05, y: -4 }}
                         whileTap={{ scale: 0.95 }}
                         onClick={() => handleQuickTimer(min)}
                         className="premium-card text-white py-10 font-light text-3xl tracking-tight"
@@ -575,7 +580,7 @@ export default function ClockView() {
                 <motion.div
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="flex flex-col items-center justify-center h-64 text-zinc-500"
+                  className="flex flex-col items-center justify-center h-64 text-zinc-500 "
                 >
                   <Timer size={64} className="mb-4 opacity-20" strokeWidth={1.5} />
                   <p className="text-base font-light">No Timers</p>
@@ -583,7 +588,7 @@ export default function ClockView() {
               )}
 
               {!showCustomTimerModal && (
-                <div className="space-y-3">
+                <div className="space-y-3 mb-10">
                   <AnimatePresence mode="popLayout">
                     {timers.map((t, index) => {
                       const progress = ((t.duration - t.remaining) / t.duration) * 100;

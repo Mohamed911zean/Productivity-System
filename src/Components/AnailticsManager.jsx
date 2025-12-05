@@ -26,12 +26,16 @@ ChartJS.register(
 );
 
 export default function Overview() {
-  const getTotalToday = useAnalyticsStore(state => state.getTotalToday);
-  const getCountToday = useAnalyticsStore(state => state.getCountToday);
-  const getAverageToday = useAnalyticsStore(state => state.getAverageToday);
-  const getWeekTotal = useAnalyticsStore(state => state.getWeekTotal);
-  const getWeeklyData = useAnalyticsStore(state => state.getWeeklyData);
-  
+  // Get functions from store
+  const {
+    getTotalToday,
+    getCountToday,
+    getAverageToday,
+    getWeekTotal,
+    getWeeklyData
+  } = useAnalyticsStore();
+
+  // Call the functions to get values
   const totalToday = getTotalToday();
   const countToday = getCountToday();
   const averageToday = getAverageToday();
