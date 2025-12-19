@@ -8,16 +8,27 @@ export const formatTime = (seconds) => {
   return `${h}h ${m}m`;
 };
 
-// Get Egypt date
+// Helper: Get Date object representing Egypt time
+const getEgyptDateObj = () => {
+  const now = new Date();
+  const egyptTimeStr = now.toLocaleString("en-US", { timeZone: "Africa/Cairo" });
+  return new Date(egyptTimeStr);
+};
+
+// Helper: Format date to YYYY-MM-DD (using local time of the date object)
+const formatDate = (date) => {
+  return date.toLocaleDateString("en-CA");
+};
+
+// Get Egypt date string
 const getEgyptDate = () => {
-  const egyptDate = new Date().toLocaleString("en-US", { timeZone: "Africa/Cairo" });
-  return new Date(egyptDate).toLocaleDateString("en-CA");
+  return formatDate(getEgyptDateObj());
 };
 
 // Calculate weekly data based on sessions
 const calculateWeeklyData = (sessions) => {
-  const today = new Date();
-  const weekAgo = new Date();
+  const today = getEgyptDateObj();
+  const weekAgo = new Date(today);
   weekAgo.setDate(today.getDate() - 6);
 
   const data = [];
@@ -26,7 +37,7 @@ const calculateWeeklyData = (sessions) => {
     const day = new Date(weekAgo);
     day.setDate(weekAgo.getDate() + i);
 
-    const dayStr = day.toISOString().split("T")[0];
+    const dayStr = formatDate(day);
 
     const daySessions = sessions.filter(s => s.date === dayStr);
     const total = daySessions.reduce((sum, s) => sum + s.duration, 0);
@@ -43,7 +54,7 @@ const calculateWeeklyData = (sessions) => {
 
 // Get weeks in current month
 const getWeeksInMonth = () => {
-  const now = new Date();
+  const now = getEgyptDateObj();
   const year = now.getFullYear();
   const month = now.getMonth();
   
@@ -92,7 +103,7 @@ const getWeekData = (weekStart, weekEnd, sessions, tasks) => {
     
     if (day > weekEnd) break;
     
-    const dayStr = day.toISOString().split("T")[0];
+    const dayStr = formatDate(day);
     
     // Pomodoro data
     const daySessions = sessions.filter(s => s.date === dayStr);
@@ -199,7 +210,7 @@ export const useAnalyticsStore = create(
       
       // Get current month info
       getCurrentMonthInfo: () => {
-        const now = new Date();
+        const now = getEgyptDateObj();
         return {
           month: now.toLocaleDateString("en-US", { month: "long" }),
           year: now.getFullYear(),
@@ -230,16 +241,19 @@ export const useAnalyticsStore = create(
       
       // Monthly summary stats
       getMonthlyStats: (tasks = []) => {
-        const now = new Date();
+        const now = getEgyptDateObj();
         const year = now.getFullYear();
         const month = now.getMonth();
         
-        const firstDay = new Date(year, month, 1).toISOString().split("T")[0];
-        const lastDay = new Date(year, month + 1, 0).toISOString().split("T")[0];
+        const firstDay = new Date(year, month, 1);
+        const lastDay = new Date(year, month + 1, 0);
+        
+        const firstDayStr = formatDate(firstDay);
+        const lastDayStr = formatDate(lastDay);
         
         // Pomodoro stats
         const monthSessions = get().sessions.filter(
-          s => s.date >= firstDay && s.date <= lastDay
+          s => s.date >= firstDayStr && s.date <= lastDayStr
         );
         
         const totalPomodoros = monthSessions.length;
@@ -248,7 +262,7 @@ export const useAnalyticsStore = create(
         
         // Task stats
         const monthTasks = tasks.filter(
-          t => t.dateISO >= firstDay && t.dateISO <= lastDay
+          t => t.dateISO >= firstDayStr && t.dateISO <= lastDayStr
         );
         
         const totalTasks = monthTasks.length;
@@ -285,14 +299,14 @@ export const useAnalyticsStore = create(
         const totalMinutes = weekData.reduce((sum, d) => sum + d.pomodoroTotal, 0) / 60;
         const totalTasks = weekData.reduce((sum, d) => sum + d.totalTasks, 0);
         const completedTasks = weekData.reduce((sum, d) => sum + d.completedTasks, 0);
-        const avgCompletion = weekData.reduce((sum, d) => sum + d.completionRate, 0) / weekData.length;
+        const overallCompletion = totalTasks > 0 ? (completedTasks / totalTasks) * 100 : 0;
         
         return {
           pomodoros: totalPomos,
           focusTime: totalMinutes,
           tasksCompleted: completedTasks,
           totalTasks: totalTasks,
-          completionRate: avgCompletion
+          completionRate: overallCompletion
         };
       }
     }),
