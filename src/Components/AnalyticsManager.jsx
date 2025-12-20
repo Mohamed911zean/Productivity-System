@@ -388,7 +388,7 @@ export default function AnalyticsPage() {
             <ChevronLeft size={20} />
           </button>
           
-          <div className="flex gap-2">
+          <div className="flex gap-2 overflow-x-auto custom-scrollbar flex-1 min-w-0 mx-2">
             {weeks.map((week, i) => (
               <button
                 key={i}
