@@ -41,11 +41,11 @@ function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
           </div>
           <h3 className="text-xl font-semibold text-zinc-100">Delete Timer?</h3>
         </div>
-        
+
         <p className="text-zinc-400 mb-6">
           Are you sure you want to delete this timer? Your progress will be lost.
         </p>
-        
+
         <div className="flex gap-3">
           <button
             onClick={onClose}
@@ -69,7 +69,7 @@ export default function TimeManager() {
   const [customMinutes, setCustomMinutes] = useState(25);
   const [deleteModalOpen, setDeleteModalOpen] = useState(false);
   const [timerToDelete, setTimerToDelete] = useState(null);
-  
+
   // Sounds
   const playClick = useSoundEffect(SOUNDS.click);
   const playTimerEnd = useSoundEffect(SOUNDS.timerEnd);
@@ -109,15 +109,15 @@ export default function TimeManager() {
 
   const handleStartTimer = (minutes) => {
     playClick();
-    
+
     // Check if timer already exists
     const success = addTimer({ duration: minutes * 60, isRunning: true, label: `${minutes} min` });
-    
+
     if (!success) {
       toast.error("You already have an active timer! Complete or delete it first.");
       return;
     }
-    
+
     startSession();
     toast.success(`${minutes} min timer started!`);
   };
@@ -191,7 +191,7 @@ export default function TimeManager() {
 
   return (
     <>
-      <SideBar/>
+      <SideBar />
       <div className="min-h-screen w-full bg-[#09090b] text-zinc-100 font-sans selection:bg-zinc-800 p-6 md:p-12">
         <Toaster position="top-center" toastOptions={{
           style: {
@@ -215,146 +215,135 @@ export default function TimeManager() {
         </AnimatePresence>
 
         <div className="max-w-4xl mx-auto space-y-10 pt-12 md:pt-0">
-          <header className="flex flex-col gap-2">
-            <motion.h1 
-              initial={{ opacity: 0, y: 10 }}
-              animate={{ opacity: 1, y: 0 }}
-              className='text-3xl font-medium tracking-tight text-white'
-            >
-              Pomodoro Focus
-            </motion.h1>
-            <motion.p
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              transition={{ delay: 0.1 }}
-              className="text-zinc-500 text-sm font-medium"
-            >
-              Manage your time and boost productivity
-            </motion.p>
-          </header>
-
-          {/* Presets */}
-          <motion.div 
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
-            className="grid grid-cols-1 md:grid-cols-3 gap-4"
-          >
-            <button
-              onClick={() => handleStartTimer(25)}
-              disabled={timers.length > 0}
-              className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${
-                timers.length > 0 
-                  ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed' 
-                  : 'bg-zinc-900/20 hover:bg-zinc-900/40'
-              }`}
-            >
-              <div className="p-3 rounded-xl bg-red-500/10 text-red-500 group-hover:bg-red-500/20 transition-colors">
-                <Brain size={24} />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-zinc-100">Focus</h3>
-                <p className="text-sm text-zinc-500">25 Minutes</p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => handleStartTimer(5)}
-              disabled={timers.length > 0}
-              className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${
-                timers.length > 0 
-                  ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed' 
-                  : 'bg-zinc-900/20 hover:bg-zinc-900/40'
-              }`}
-            >
-              <div className="p-3 rounded-xl bg-green-500/10 text-green-500 group-hover:bg-green-500/20 transition-colors">
-                <Coffee size={24} />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-zinc-100">Short Break</h3>
-                <p className="text-sm text-zinc-500">5 Minutes</p>
-              </div>
-            </button>
-
-            <button
-              onClick={() => handleStartTimer(15)}
-              disabled={timers.length > 0}
-              className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${
-                timers.length > 0 
-                  ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed' 
-                  : 'bg-zinc-900/20 hover:bg-zinc-900/40'
-              }`}
-            >
-              <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:bg-blue-500/20 transition-colors">
-                <Zap size={24} />
-              </div>
-              <div className="text-center">
-                <h3 className="text-lg font-semibold text-zinc-100">Long Break</h3>
-                <p className="text-sm text-zinc-500">15 Minutes</p>
-              </div>
-            </button>
-          </motion.div>
-
-          {/* Custom Timer */}
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.3 }}
-            className="p-6 rounded-2xl border border-zinc-800/50 bg-zinc-900/20"
-          >
-            <div className="flex items-center gap-4">
-              <div className="flex-1">
-                <label className="text-sm font-medium text-zinc-400 mb-2 block">Custom Duration (minutes)</label>
-                <input
-                  type="number"
-                  min="1"
-                  value={customMinutes}
-                  onChange={(e) => setCustomMinutes(Number(e.target.value))}
-                  className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-100 focus:outline-none focus:border-zinc-700 transition-colors"
-                  disabled={timers.length > 0}
-                />
-              </div>
-              <button
-                onClick={() => handleStartTimer(customMinutes)}
-                disabled={timers.length > 0}
-                className={`mt-7 p-3.5 rounded-xl font-medium flex items-center gap-2 transition-colors ${
-                  timers.length > 0
-                    ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
-                    : 'bg-zinc-100 text-zinc-950 hover:bg-zinc-300'
-                }`}
-              >
-                <Plus size={20} />
-                <span>Start</span>
-              </button>
-            </div>
-          </motion.div>
-
-          {/* Active Timers - Circular Style */}
-          <div className="space-y-4">
-            <h2 className="text-xl font-semibold text-zinc-200 flex items-center gap-2">
-              <TimerIcon size={20} className="text-zinc-400" />
-              Active Timer
-            </h2>
-            
-            <AnimatePresence mode="popLayout">
-              {timers.length === 0 ? (
-                <motion.div
+          {timers.length === 0 && (
+            <>
+              <header className="flex flex-col gap-2">
+                <motion.h1
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className='text-3xl font-medium tracking-tight text-white'
+                >
+                  Pomodoro Focus
+                </motion.h1>
+                <motion.p
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
-                  className="text-center py-12 text-zinc-500 border border-dashed border-zinc-800 rounded-2xl"
+                  transition={{ delay: 0.1 }}
+                  className="text-zinc-500 text-sm font-medium"
                 >
-                  No active timers. Start one above!
-                </motion.div>
-              ) : (
-                timers.map((timer) => (
-                  <motion.div
-                    key={timer.id}
-                    initial={{ opacity: 0, scale: 0.95 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.95 }}
-                    layout
-                    className="p-8 rounded-2xl border border-zinc-800/50 bg-zinc-900/40 flex flex-col items-center gap-8"
+                  Manage your time and boost productivity
+                </motion.p>
+              </header>
+
+              {/* Presets */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.2 }}
+                className="grid grid-cols-1 md:grid-cols-3 gap-4"
+              >
+                <button
+                  onClick={() => handleStartTimer(25)}
+                  disabled={timers.length > 0}
+                  className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${timers.length > 0
+                      ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed'
+                      : 'bg-zinc-900/20 hover:bg-zinc-900/40'
+                    }`}
+                >
+                  <div className="p-3 rounded-xl bg-red-500/10 text-red-500 group-hover:bg-red-500/20 transition-colors">
+                    <Brain size={24} />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-zinc-100">Focus</h3>
+                    <p className="text-sm text-zinc-500">25 Minutes</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleStartTimer(5)}
+                  disabled={timers.length > 0}
+                  className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${timers.length > 0
+                      ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed'
+                      : 'bg-zinc-900/20 hover:bg-zinc-900/40'
+                    }`}
+                >
+                  <div className="p-3 rounded-xl bg-green-500/10 text-green-500 group-hover:bg-green-500/20 transition-colors">
+                    <Coffee size={24} />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-zinc-100">Short Break</h3>
+                    <p className="text-sm text-zinc-500">5 Minutes</p>
+                  </div>
+                </button>
+
+                <button
+                  onClick={() => handleStartTimer(15)}
+                  disabled={timers.length > 0}
+                  className={`group p-6 rounded-2xl border border-zinc-800/50 transition-all duration-300 flex flex-col items-center gap-3 ${timers.length > 0
+                      ? 'bg-zinc-900/10 opacity-50 cursor-not-allowed'
+                      : 'bg-zinc-900/20 hover:bg-zinc-900/40'
+                    }`}
+                >
+                  <div className="p-3 rounded-xl bg-blue-500/10 text-blue-500 group-hover:bg-blue-500/20 transition-colors">
+                    <Zap size={24} />
+                  </div>
+                  <div className="text-center">
+                    <h3 className="text-lg font-semibold text-zinc-100">Long Break</h3>
+                    <p className="text-sm text-zinc-500">15 Minutes</p>
+                  </div>
+                </button>
+              </motion.div>
+
+              {/* Custom Timer */}
+              <motion.div
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ delay: 0.3 }}
+                className="p-6 rounded-2xl border border-zinc-800/50 bg-zinc-900/20"
+              >
+                <div className="flex items-center gap-4">
+                  <div className="flex-1">
+                    <label className="text-sm font-medium text-zinc-400 mb-2 block">Custom Duration (minutes)</label>
+                    <input
+                      type="number"
+                      min="1"
+                      value={customMinutes}
+                      onChange={(e) => setCustomMinutes(Number(e.target.value))}
+                      className="w-full bg-zinc-950 border border-zinc-800 rounded-xl px-4 py-3 text-zinc-100 focus:outline-none focus:border-zinc-700 transition-colors"
+                      disabled={timers.length > 0}
+                    />
+                  </div>
+                  <button
+                    onClick={() => handleStartTimer(customMinutes)}
+                    disabled={timers.length > 0}
+                    className={`mt-7 p-3.5 rounded-xl font-medium flex items-center gap-2 transition-colors ${timers.length > 0
+                        ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed'
+                        : 'bg-zinc-100 text-zinc-950 hover:bg-zinc-300'
+                      }`}
                   >
+                    <Plus size={20} />
+                    <span>Start</span>
+                  </button>
+                </div>
+              </motion.div>
+
+             
+            </>
+          )}
+
+          {/* Active Timer - Circular Style (shown when timer exists) */}
+          {timers.length > 0 && (
+            <AnimatePresence mode="popLayout">
+              {timers.map((timer) => (
+                <motion.div
+                  key={timer.id}
+                  initial={{ opacity: 0, scale: 0.95 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 0.95 }}
+                  layout
+                  className="min-h-[calc(100vh-8rem)] flex items-center justify-center"
+                >
+                  <div className="p-8 rounded-2xl border border-zinc-800/50 bg-zinc-900/40 flex flex-col items-center gap-8">
                     {/* Circular Timer Display */}
                     <div className="relative flex items-center justify-center">
                       {/* Progress Circle */}
@@ -379,15 +368,14 @@ export default function TimeManager() {
                           fill="none"
                           strokeDasharray={`${2 * Math.PI * 136}`}
                           strokeDashoffset={`${2 * Math.PI * 136 * (1 - getProgress(timer) / 100)}`}
-                          className={`transition-all duration-1000 ${
-                            timer.status === 'running' ? 'text-blue-500' :
-                            timer.status === 'paused' ? 'text-amber-500' :
-                            'text-red-500'
-                          }`}
+                          className={`transition-all duration-1000 ${timer.status === 'running' ? 'text-blue-500' :
+                              timer.status === 'paused' ? 'text-amber-500' :
+                                'text-red-500'
+                            }`}
                           strokeLinecap="round"
                         />
                       </svg>
-                      
+
                       {/* Timer Text */}
                       <div className="absolute inset-0 flex flex-col items-center justify-center">
                         <div className="text-6xl font-light tracking-tight font-mono text-zinc-100">
@@ -416,7 +404,7 @@ export default function TimeManager() {
                           Pause
                         </button>
                       )}
-                      
+
                       {timer.status === 'paused' && (
                         <>
                           <button
@@ -433,7 +421,7 @@ export default function TimeManager() {
                           </button>
                         </>
                       )}
-                      
+
                       {timer.status === 'stopped' && (
                         <button
                           onClick={() => handleResetTimer(timer.id)}
@@ -453,11 +441,11 @@ export default function TimeManager() {
                         Delete Timer
                       </button>
                     )}
-                  </motion.div>
-                ))
-              )}
+                  </div>
+                </motion.div>
+              ))}
             </AnimatePresence>
-          </div>
+          )}
         </div>
       </div>
     </>
