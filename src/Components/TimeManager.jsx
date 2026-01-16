@@ -43,7 +43,7 @@ function DeleteConfirmModal({ isOpen, onClose, onConfirm }) {
         </div>
         
         <p className="text-zinc-400 mb-6">
-          Are you sure you want to delete this timer? Your progress will be saved in your profile.
+          Are you sure you want to delete this timer? Your progress will be lost.
         </p>
         
         <div className="flex gap-3">
@@ -182,6 +182,11 @@ export default function TimeManager() {
     const s = seconds % 60;
     if (h > 0) return `${h}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
     return `${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`;
+  };
+
+  // Calculate progress percentage
+  const getProgress = (timer) => {
+    return ((timer.duration - timer.remaining) / timer.duration) * 100;
   };
 
   return (
@@ -324,11 +329,11 @@ export default function TimeManager() {
             </div>
           </motion.div>
 
-          {/* Active Timers */}
+          {/* Active Timers - Circular Style */}
           <div className="space-y-4">
             <h2 className="text-xl font-semibold text-zinc-200 flex items-center gap-2">
               <TimerIcon size={20} className="text-zinc-400" />
-              Active Timers
+              Active Timer
             </h2>
             
             <AnimatePresence mode="popLayout">
@@ -348,63 +353,106 @@ export default function TimeManager() {
                     animate={{ opacity: 1, scale: 1 }}
                     exit={{ opacity: 0, scale: 0.95 }}
                     layout
-                    className="p-6 rounded-2xl border border-zinc-800/50 bg-zinc-900/40 flex flex-col sm:flex-row items-center justify-between gap-6"
+                    className="p-8 rounded-2xl border border-zinc-800/50 bg-zinc-900/40 flex flex-col items-center gap-8"
                   >
-                    <div className="text-center sm:text-left">
-                      <div className="text-5xl font-thin tracking-tight font-mono text-zinc-100">
-                        {formatTimerDisplay(timer.remaining)}
-                      </div>
-                      <div className="text-sm text-zinc-500 mt-1">
-                        {timer.label || "Custom Timer"} • {Math.round(timer.duration / 60)} min total
-                      </div>
-                      {timer.status === 'paused' && (
-                        <div className="text-xs text-amber-500 mt-1 flex items-center justify-center sm:justify-start gap-1">
-                          <Pause size={12} />
-                          Paused
+                    {/* Circular Timer Display */}
+                    <div className="relative flex items-center justify-center">
+                      {/* Progress Circle */}
+                      <svg className="w-72 h-72 -rotate-90">
+                        {/* Background Circle */}
+                        <circle
+                          cx="144"
+                          cy="144"
+                          r="136"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          className="text-zinc-800"
+                        />
+                        {/* Progress Circle */}
+                        <circle
+                          cx="144"
+                          cy="144"
+                          r="136"
+                          stroke="currentColor"
+                          strokeWidth="8"
+                          fill="none"
+                          strokeDasharray={`${2 * Math.PI * 136}`}
+                          strokeDashoffset={`${2 * Math.PI * 136 * (1 - getProgress(timer) / 100)}`}
+                          className={`transition-all duration-1000 ${
+                            timer.status === 'running' ? 'text-blue-500' :
+                            timer.status === 'paused' ? 'text-amber-500' :
+                            'text-red-500'
+                          }`}
+                          strokeLinecap="round"
+                        />
+                      </svg>
+                      
+                      {/* Timer Text */}
+                      <div className="absolute inset-0 flex flex-col items-center justify-center">
+                        <div className="text-6xl font-light tracking-tight font-mono text-zinc-100">
+                          {formatTimerDisplay(timer.remaining)}
                         </div>
-                      )}
-                      {timer.status === 'stopped' && (
-                        <div className="text-xs text-red-500 mt-1 flex items-center justify-center sm:justify-start gap-1">
-                          <Square size={12} />
-                          Stopped
-                        </div>
-                      )}
+                        {timer.status === 'paused' && (
+                          <div className="text-sm text-zinc-400 mt-2">
+                            Paused
+                          </div>
+                        )}
+                        {timer.status === 'stopped' && (
+                          <div className="text-sm text-zinc-400 mt-2">
+                            Stopped
+                          </div>
+                        )}
+                      </div>
                     </div>
 
-                    <div className="flex items-center gap-3">
+                    {/* Buttons */}
+                    <div className="flex flex-col items-center gap-4 w-full max-w-xs">
                       {timer.status === 'running' && (
                         <button
                           onClick={() => handlePauseTimer(timer.id)}
-                          className="p-4 rounded-full bg-amber-500/10 text-amber-500 hover:bg-amber-500/20 transition-all"
+                          className="w-full px-6 py-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all text-lg"
                         >
-                          <Pause size={24} fill="currentColor" />
+                          Pause
                         </button>
                       )}
                       
                       {timer.status === 'paused' && (
-                        <button
-                          onClick={() => handleResumeTimer(timer.id)}
-                          className="p-4 rounded-full bg-green-500/10 text-green-500 hover:bg-green-500/20 transition-all"
-                        >
-                          <Play size={24} fill="currentColor" />
-                        </button>
+                        <>
+                          <button
+                            onClick={() => handleResumeTimer(timer.id)}
+                            className="w-full px-6 py-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all text-lg"
+                          >
+                            Continue
+                          </button>
+                          <button
+                            onClick={() => handleDeleteTimer(timer.id)}
+                            className="w-full px-6 py-4 rounded-full border-2 border-blue-600 text-blue-600 hover:bg-blue-600/10 font-medium transition-all text-lg"
+                          >
+                            End
+                          </button>
+                        </>
                       )}
                       
-                     
-                      <button
-                        onClick={() => handleResetTimer(timer.id)}
-                        className="p-4 rounded-full bg-zinc-800/50 text-zinc-400 hover:bg-zinc-800 hover:text-zinc-200 transition-all"
-                      >
-                        <RotateCcw size={24} />
-                      </button>
+                      {timer.status === 'stopped' && (
+                        <button
+                          onClick={() => handleResetTimer(timer.id)}
+                          className="w-full px-6 py-4 rounded-full bg-blue-600 hover:bg-blue-700 text-white font-medium transition-all text-lg"
+                        >
+                          Reset
+                        </button>
+                      )}
+                    </div>
 
+                    {/* Delete button - always visible at bottom */}
+                    {timer.status !== 'paused' && (
                       <button
                         onClick={() => handleDeleteTimer(timer.id)}
-                        className="p-4 rounded-full bg-red-500/10 text-red-500 hover:bg-red-500/20 transition-all"
+                        className="text-sm text-zinc-500 hover:text-red-500 transition-colors"
                       >
-                        <X size={24} />
+                        Delete Timer
                       </button>
-                    </div>
+                    )}
                   </motion.div>
                 ))
               )}
