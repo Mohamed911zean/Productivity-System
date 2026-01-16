@@ -3,6 +3,8 @@ import { getAuth, onAuthStateChanged } from "firebase/auth";
 import { getFirestore } from "firebase/firestore";
 import { useNotesStore } from "../stores/useNotesStore.jsx";
 import { useTasksStore } from "../stores/useTasksStore.jsx";
+import { useAnalyticsStore } from "../stores/AnaliticsStore.jsx";
+import { useTimeManagerStore } from "../stores/TimeManagerStore.jsx";
 
 import { useAuthStore } from "../stores/AuthStore.jsx";
 
@@ -28,15 +30,24 @@ onAuthStateChanged(auth, (user) => {
 
   const notesStore = useNotesStore.getState();
   const tasksStore = useTasksStore.getState();
+  const analyticsStore = useAnalyticsStore.getState();
+  const timeManagerStore = useTimeManagerStore.getState();
 
   if (user) {
     notesStore.setUser(user);
     tasksStore.setUser(user);
+    analyticsStore.setUser(user);
+    timeManagerStore.setUser(user);
+
     notesStore.fetchFromFirestore();
     tasksStore.fetchFromFirestore();
+    analyticsStore.fetchFromFirestore();
+    timeManagerStore.fetchFromFirestore();
   } else {
     // Clear data on logout
     notesStore.setUser(null);
     tasksStore.setUser(null);
+    analyticsStore.setUser(null);
+    timeManagerStore.setUser(null);
   }
 });
